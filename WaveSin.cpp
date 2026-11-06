@@ -78,12 +78,12 @@ ParamsSetup (
 	);
 
 	AEFX_CLR_STRUCT(def);
-	// 波形高度
+	// 波形高度（负值即反向，无需单独的“反转方向”开关）
 	PF_ADD_FLOAT_SLIDERX(	STR(StrID_Gain_Param_Name), 
 							WAVESIN_GAIN_MIN, 
 							WAVESIN_GAIN_MAX, 
-							0, 
-							1000, 
+							WAVESIN_GAIN_SLIDER_MIN, 
+							WAVESIN_GAIN_SLIDER_MAX, 
 							WAVESIN_GAIN_DFLT,
 							PF_Precision_HUNDREDTHS,
 							0,
@@ -111,14 +111,6 @@ ParamsSetup (
 		0,
 		OFFSET_ID
 	);
-
-	AEFX_CLR_STRUCT(def);
-	// 反转方向
-	PF_ADD_CHECKBOXX(	
-					STR(StrID_Reverse_Direction_Param_Name),
-					FALSE,
-					0,
-					REVERSE_DIRECTION_ID);
 
 	AEFX_CLR_STRUCT(def);
 	// 长度约束
@@ -161,7 +153,6 @@ void CalcWavePixel(
 	PF_FpLong gain,
 	PF_FpLong waveWidth,
 	PF_FpLong angleOffset,
-	bool reverseDirection,
 	bool lengthConstraint,
 	A_long waveForm,
 	A_long waveDirection,	// 波形扭曲方向
@@ -191,10 +182,8 @@ void CalcWavePixel(
 	if (waveDirection == 1) {		// 径向扭曲
 		// 根据角度计算波动程度
 		// 添加了相位偏移，确保边界连续
+		// gain 为负值时位移方向自然翻转（等价于原来的“反转方向”）
 		PF_FpLong waveOffset = 0.5 * (GetWaveFuncValue(waveForm, calc_angle) + 1) * gain;
-		if (reverseDirection) {
-			waveOffset = -waveOffset;
-		}
 		// 新的像素位置，就是沿着原点到锚点的方向，移动波动程度后的坐标
 		PF_FpLong denX = 2000;
 		PF_FpLong denY = 2000;
@@ -207,10 +196,8 @@ void CalcWavePixel(
 	}
 	else {	// 旋转扭曲
 		// 极坐标角度添加偏移
+		// gain 为负值时旋转方向自然翻转（等价于原来的“反转方向”）
 		PF_FpLong angleOffset = GetWaveFuncValue(waveForm, (length * waveWidth / downSampleScaleX / 200)) * gain / 2000;
-		if (reverseDirection) {
-			angleOffset = -angleOffset;
-		}
 		// 新的像素位置，从极坐标还原回直角坐标加上锚点坐标偏移
 		*new_xFi = FLOAT2FIX(FIX_2_FLOAT(anchorX) + length * cos(angle + angleOffset));
 		*new_yFi = FLOAT2FIX(FIX_2_FLOAT(anchorY) + length * sin(angle + angleOffset));
@@ -249,7 +236,6 @@ MySimpleGainFunc16 (
 					giP->gain,
 					giP->waveWidth,
 					giP->offset,
-					giP->reverseDirection,
 					giP->lengthConstraint,
 					giP->waveForm,
 					giP->waveDirection,
@@ -298,7 +284,6 @@ MySimpleGainFunc8 (
 					giP->gain,
 					giP->waveWidth,
 					giP->offset,
-					giP->reverseDirection,
 					giP->lengthConstraint,
 					giP->waveForm,
 					giP->waveDirection,
@@ -338,7 +323,6 @@ Render (
 	giP.gain = params[WAVESIN_GAIN]->u.fs_d.value;
 	giP.waveWidth = params[WAVESIN_WAVE_WIDTH]->u.fs_d.value;
 	giP.offset = FIX_2_FLOAT(params[WAVESIN_OFFSET]->u.ad.value);
-	giP.reverseDirection = params[WAVESIN_REVERSE_DIRECTION]->u.bd.value;
 	giP.lengthConstraint = params[WAVESIN_LENGTH_CONSTRAINT]->u.bd.value;
 	giP.waveForm = params[WAVESIN_WAVE_FORM]->u.pd.value;
 	giP.waveDirection = params[WAVESIN_WAVE_DIRECTION]->u.pd.value;
@@ -444,10 +428,15 @@ FrameSetup (
 	PF_ParamDef		*params[],
 	PF_LayerDef		*output )
 {
-	// 如果反转开关开启，那么就需要扩展边缘像素
+	// 波形高度为负值时，变形方向与正值相反（原“反转方向”开关），
+	// 此时采样会向内收缩，同样需要扩展边缘像素。
 	PF_Err	err = PF_Err_NONE;
 
-	if(!params[WAVESIN_REVERSE_DIRECTION]->u.bd.value){
+	PF_FpLong gain = params[WAVESIN_GAIN]->u.fs_d.value;
+	PF_FpLong absGain = fabs(gain);
+	bool reversed = gain < 0;
+
+	if(!reversed){
 		// 如果是旋转，依然需要扩展边缘
 		if(params[WAVESIN_WAVE_DIRECTION]->u.pd.value == 1){
 			return err;
@@ -460,12 +449,12 @@ FrameSetup (
 
 	PF_LayerDef *input_layer = &params[WAVESIN_INPUT]->u.ld;
 
-	PF_FpLong offsetX, offsetY = 0;
+	PF_FpLong offsetX = 0, offsetY = 0;
 	if(params[WAVESIN_WAVE_DIRECTION]->u.pd.value == 1){	// 径向扭曲
 		if(params[WAVESIN_LENGTH_CONSTRAINT]->u.bd.value){
 			// 长度约束
-			offsetX = params[WAVESIN_GAIN]->u.fs_d.value * downSampleScaleX;
-			offsetY = params[WAVESIN_GAIN]->u.fs_d.value * downSampleScaleY;
+			offsetX = absGain * downSampleScaleX;
+			offsetY = absGain * downSampleScaleY;
 		 } else {
 			// 非长度约束
 			// 取四个点到锚点的最大 deltaX 和 deltaY 作为扩展距离
@@ -475,11 +464,11 @@ FrameSetup (
 			PF_FpLong deltaY = max(abs(anchorY), abs(input_layer->height - anchorY));
 			// 指数增长
 			PF_FpLong mi = 1.2;
-			if(params[WAVESIN_GAIN]->u.fs_d.value / 1000 > 1){
+			if(absGain / 1000 > 1){
 				mi = 3;
 			}
-			offsetX = deltaX * pow((pow(2, params[WAVESIN_GAIN]->u.fs_d.value / 1000) - 1), mi);
-			offsetY = deltaY * pow((pow(2, params[WAVESIN_GAIN]->u.fs_d.value / 1000) - 1), mi);
+			offsetX = deltaX * pow((pow(2, absGain / 1000) - 1), mi);
+			offsetY = deltaY * pow((pow(2, absGain / 1000) - 1), mi);
 		 }
 	} else {	
 		// 旋转扭曲相当于将矩形扩展为方形，取四个点到锚点的最大距离作为扩展半径，以锚点为中心画出正方形区域

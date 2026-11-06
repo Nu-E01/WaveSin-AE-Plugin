@@ -41,7 +41,7 @@ typedef short int			int16;
 /* Versioning information */
 
 #define	MAJOR_VERSION	1
-#define	MINOR_VERSION	2
+#define	MINOR_VERSION	3
 #define	BUG_VERSION		0
 #define	STAGE_VERSION	PF_Stage_RELEASE
 #define	BUILD_VERSION	1
@@ -55,9 +55,13 @@ BUILD_VERSION */
 
 /* Parameter defaults */
 
-#define	WAVESIN_GAIN_MIN		0
+/* 波形高度（Wave Height）为有符号值：
+   正值 = 原方向，负值 = 反向，不再需要单独的“反转方向”开关。 */
+#define	WAVESIN_GAIN_MIN		-100000
 #define	WAVESIN_GAIN_MAX		100000
 #define	WAVESIN_GAIN_DFLT		10
+#define	WAVESIN_GAIN_SLIDER_MIN	-1000
+#define	WAVESIN_GAIN_SLIDER_MAX	1000
 
 enum {
 	WAVESIN_INPUT = 0,
@@ -65,7 +69,6 @@ enum {
 	WAVESIN_GAIN,
 	WAVESIN_WAVE_WIDTH,
 	WAVESIN_OFFSET,
-	WAVESIN_REVERSE_DIRECTION,
 	WAVESIN_LENGTH_CONSTRAINT,
 	WAVESIN_WAVE_FORM,
 	WAVESIN_WAVE_DIRECTION,
@@ -77,7 +80,6 @@ enum {
 	GAIN_DISK_ID,
 	WAVE_WIDTH_ID,
 	OFFSET_ID,
-	REVERSE_DIRECTION_ID,
 	LENGTH_CONSTRAINT_ID,
 	WAVE_FORM_ID,
 	WAVE_DIRECTION_ID,
@@ -90,7 +92,6 @@ typedef struct WaveInfo{
 	PF_FpLong	waveWidth;
 	PF_FpLong 	gain;
 	PF_FpLong	offset;
-	bool		reverseDirection;
 	bool		lengthConstraint;
 	A_long		waveForm;
 	A_long		waveDirection;

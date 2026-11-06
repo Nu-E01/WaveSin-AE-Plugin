@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Resources">
@@ -21,77 +21,81 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\WaveForm.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
     <ClInclude Include="..\WaveSin.h">
       <Filter>Headers</Filter>
     </ClInclude>
     <ClInclude Include="..\WaveSin_Strings.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\A.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\A.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_Effect.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_Effect.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_EffectCB.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_EffectCB.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_EffectCBSuites.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_EffectCBSuites.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_EffectSuites.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_EffectSuites.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\AE_EffectSuitesHelper.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Util\AE_EffectSuitesHelper.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_EffectUI.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_EffectUI.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_GeneralPlug.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_GeneralPlug.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_GeneralPlugOld.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_GeneralPlugOld.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_IO.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_IO.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_Macros.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_Macros.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\AEFX_ChannelDepthTpl.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Util\AEFX_ChannelDepthTpl.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\AEGP_SuiteHandler.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Util\AEGP_SuiteHandler.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\entry.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Util\entry.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\FIEL_Public.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\FIEL_Public.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\Param_Utils.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Util\Param_Utils.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\PF_Masks.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\PF_Masks.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Util\String_Utils.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Util\String_Utils.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Headers\AE_PluginData.h">
+    <ClInclude Include="$(AE_SDK_ROOT)\Headers\AE_PluginData.h">
       <Filter>Headers\AE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Util\AEGP_SuiteHandler.cpp">
+    <ClCompile Include="$(AE_SDK_ROOT)\Util\AEGP_SuiteHandler.cpp">
       <Filter>Supporting code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Util\MissingSuiteError.cpp">
+    <ClCompile Include="$(AE_SDK_ROOT)\Util\MissingSuiteError.cpp">
       <Filter>Supporting code</Filter>
     </ClCompile>
+    <ClCompile Include="..\WaveForm.cpp" />
     <ClCompile Include="..\WaveSin.cpp" />
     <ClCompile Include="..\WaveSin_Strings.cpp" />
   </ItemGroup>
